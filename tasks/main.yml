@@ -1,2 +1,28 @@
 ---
 # tasks file for ansible-role-bamboo-linux
+
+- name: Create user bamboo
+  user:
+    name: bamboo
+    home: /usr/share/bamboo
+    createhome: yes
+    state: present
+
+- name: Download Bamboo tar.gz
+  get_url:
+    url: https://product-downloads.atlassian.com/software/bamboo/downloads/atlassian-bamboo-6.3.2.tar.gz
+    dest: /tmp/atlassian-bamboo-6.3.2.tar.gz
+    mode: 0755
+
+- name: Unzip bamboo to /opt/bamboo
+  unarchive:
+    src: /tmp/atlassian-bamboo-6.3.2.tar.gz
+    dest: /opt/
+    mode: 0755
+    owner: bamboo
+
+- name: Set bamboo home
+  lineinfile:
+    path: /opt/atlassian-bamboo-6.3.2/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties
+    regexp: '^bamboo.home=*'
+    line: 'bamboo.home=/usr/share/bamboo'
